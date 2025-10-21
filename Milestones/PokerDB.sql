@@ -1,4 +1,4 @@
-/* DB Schema for 667 Term Project */
+/* DB Schema for 667 Term Project - Revised */
 DROP DATABASE IF EXISTS pokerDB;
 CREATE DATABASE pokerDB;
 
@@ -35,12 +35,11 @@ CREATE TABLE games
 DROP TABLE IF EXISTS game_players CASCADE;
 CREATE TABLE game_players
 (
-    game_player_id SERIAL PRIMARY KEY,
-    game_id        INT NOT NULL REFERENCES games (game_id) ON DELETE CASCADE,
-    player_id      INT NOT NULL REFERENCES players (pid) ON DELETE CASCADE,
-    joined_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    left_at        TIMESTAMP,
-    UNIQUE (game_id, player_id)
+    game_id   INT NOT NULL REFERENCES games (game_id) ON DELETE CASCADE,
+    player_id INT NOT NULL REFERENCES players (pid) ON DELETE CASCADE,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    left_at   TIMESTAMP,
+    PRIMARY KEY (game_id, player_id)
 );
 
 DROP TABLE IF EXISTS hands CASCADE;
@@ -48,42 +47,41 @@ CREATE TABLE hands
 (
     hand_id           SERIAL PRIMARY KEY,
     game_id           INT NOT NULL REFERENCES games (game_id) ON DELETE CASCADE,
+    hand_number       SMALLINT NOT NULL CHECK (hand_number > 0),
     pot_amount        INT       DEFAULT 0,
     winning_player_id INT REFERENCES players (pid),
     winning_hand      VARCHAR(20),
-    played_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    played_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (game_id, hand_number)
 );
 
 DROP TABLE IF EXISTS hand_player CASCADE;
 CREATE TABLE hand_player
 (
-    hand_player_id SERIAL PRIMARY KEY,
-    hand_id        INT NOT NULL REFERENCES hands (hand_id) ON DELETE CASCADE,
-    player_id      INT NOT NULL REFERENCES players (pid) ON DELETE CASCADE,
-    chips_bet      INT DEFAULT 0,
-    chips_won      INT DEFAULT 0,
-    UNIQUE (hand_id, player_id)
+    hand_id   INT NOT NULL REFERENCES hands (hand_id) ON DELETE CASCADE,
+    player_id INT NOT NULL REFERENCES players (pid) ON DELETE CASCADE,
+    chips_bet INT DEFAULT 0,
+    chips_won INT DEFAULT 0,
+    PRIMARY KEY (hand_id, player_id)
 );
 
 DROP TABLE IF EXISTS player_cards CASCADE;
 CREATE TABLE player_cards
 (
-    player_card_id SERIAL PRIMARY KEY,
-    hand_id        INT      NOT NULL REFERENCES hands (hand_id) ON DELETE CASCADE,
-    player_id      INT      NOT NULL REFERENCES players (pid) ON DELETE CASCADE,
-    card_id        INT      NOT NULL REFERENCES cards (card_id),
-    card_order     SMALLINT NOT NULL CHECK (card_order IN (1, 2)),
-    UNIQUE (hand_id, player_id, card_order)
+    hand_id    INT      NOT NULL REFERENCES hands (hand_id) ON DELETE CASCADE,
+    player_id  INT      NOT NULL REFERENCES players (pid) ON DELETE CASCADE,
+    card_id    INT      NOT NULL REFERENCES cards (card_id),
+    card_order SMALLINT NOT NULL CHECK (card_order IN (1, 2)),
+    PRIMARY KEY (hand_id, player_id, card_order)
 );
 
 DROP TABLE IF EXISTS house_cards CASCADE;
 CREATE TABLE house_cards
 (
-    house_card_id SERIAL PRIMARY KEY,
-    hand_id       INT      NOT NULL REFERENCES hands (hand_id) ON DELETE CASCADE,
-    card_id       INT      NOT NULL REFERENCES cards (card_id),
-    card_order    SMALLINT NOT NULL CHECK (card_order BETWEEN 1 AND 5),
-    UNIQUE (hand_id, card_order)
+    hand_id    INT      NOT NULL REFERENCES hands (hand_id) ON DELETE CASCADE,
+    card_id    INT      NOT NULL REFERENCES cards (card_id),
+    card_order SMALLINT NOT NULL CHECK (card_order BETWEEN 1 AND 5),
+    PRIMARY KEY (hand_id, card_order)
 );
 
 DROP TABLE IF EXISTS chip_transactions CASCADE;
