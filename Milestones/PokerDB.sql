@@ -18,7 +18,7 @@ CREATE TABLE cards
 (
     card_id SERIAL PRIMARY KEY,
     rank    VARCHAR(2) NOT NULL,
-    suit    VARCHAR(8) NOT NULL,
+    suit    VARCHAR(1) NOT NULL,
     UNIQUE (rank, suit)
 );
 
