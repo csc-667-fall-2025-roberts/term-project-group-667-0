@@ -1,4 +1,4 @@
-/* DB Schema for 667 Term Project - Revised */
+/* DB Schema for 667 Term Project */
 DROP DATABASE IF EXISTS pokerDB;
 CREATE DATABASE pokerDB;
 
@@ -46,7 +46,7 @@ DROP TABLE IF EXISTS hands CASCADE;
 CREATE TABLE hands
 (
     hand_id           SERIAL PRIMARY KEY,
-    game_id           INT NOT NULL REFERENCES games (game_id) ON DELETE CASCADE,
+    game_id           INT      NOT NULL REFERENCES games (game_id) ON DELETE CASCADE,
     hand_number       SMALLINT NOT NULL CHECK (hand_number > 0),
     pot_amount        INT       DEFAULT 0,
     winning_player_id INT REFERENCES players (pid),
@@ -100,6 +100,7 @@ CREATE TABLE chat
 (
     message_id SERIAL PRIMARY KEY,
     player_id  INT  NOT NULL REFERENCES players (pid) ON DELETE CASCADE,
+    game_id    INT  NOT NULL REFERENCES games (game_id) ON DELETE CASCADE DEFAULT 0,
     message    TEXT NOT NULL,
-    sent_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    sent_at    TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
 );
